@@ -55,6 +55,7 @@ export const ui = {
     'about.contact': 'Contacto',
     'about.emailLabel': 'Correo',
     'about.instagramLabel': 'Instagram',
+    'about.linkedinLabel': 'LinkedIn',
     'about.availability': 'Disponible para proyectos, colaboraciones y encargos.',
     'about.write': 'Escríbeme',
 
@@ -132,6 +133,7 @@ export const ui = {
     'about.contact': 'Contact',
     'about.emailLabel': 'Email',
     'about.instagramLabel': 'Instagram',
+    'about.linkedinLabel': 'LinkedIn',
     'about.availability': 'Available for projects, collaborations and commissions.',
     'about.write': 'Write to me',
 

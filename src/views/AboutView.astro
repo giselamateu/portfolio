@@ -48,6 +48,10 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
       <span class="mono">{t('about.instagramLabel')}</span>
       <a class="contact-value" href={site.instagram} target="_blank" rel="me noopener">@{site.instagramHandle}</a>
     </div>
+    <div class="contact-row">
+      <span class="mono">{t('about.linkedinLabel')}</span>
+      <a class="contact-value" href={site.linkedin} target="_blank" rel="me noopener">in/{site.linkedinHandle}</a>
+    </div>
     <p class="mono availability">{t('about.availability')}</p>
     <a class="link" href={contactHref}>{t('about.write')}</a>
   </div>
@@ -74,6 +78,7 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
   .about-media {
     aspect-ratio: 1 / 1;
     max-width: 300px;
+    justify-self: center;
   }
   .about-media img {
     width: 100%;

@@ -1,5 +1,5 @@
 ---
-import { site } from '../config';
+import SocialIcons from './SocialIcons.astro';
 import { localePath, useTranslations, type Lang } from '../i18n/utils';
 
 interface Props {
@@ -19,8 +19,7 @@ const year = new Date().getFullYear();
 
     <div class="foot-contact">
       <span class="mono">{t('about.contact')}</span>
-      <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
-      <a class="link" href={site.instagram} rel="me noopener" target="_blank">@{site.instagramHandle}</a>
+      <SocialIcons />
     </div>
 
     <div class="foot-meta">
