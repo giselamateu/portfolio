@@ -21,14 +21,18 @@ Pages.
   outlook ("Graduada en diseño de moda, con una mirada creativa, conceptual y
   contemporánea"), single profile link. No footer.
 - **Proyectos:** even, hierarchy-free grid — all cards equal, small covers, wide
-  margins. Two template entries (`muestra-01`, `muestra-02`) stand in for future
-  projects and must be deleted or replaced before publishing.
+  margins, ordered by `order`. Two entries: DRESSAGE and Eva Fàbregas.
 - **Instagram:** own page with the feed (`/instagram`, `/en/instagram`).
 - **Project:** hero → sticky chapter index (side rail on desktop, strip on mobile, with
-  scrollspy) → concept → moodboard → palette → line-up → 3D·CLO → editorial → process
-  → technical sheets → back link. Sparse sections are hidden automatically, and so
-  are their index entries. No meta sidebar: season/year live in the hero eyebrow only.
-  Projects never link to each other.
+  scrollspy) → concept → moodboard → palette → line-up → 3D·CLO → editorial →
+  process → technical sheets → back link. Every section is optional in
+  the schema (`moodboard`, `paletteBoard`, `processBoard`, `clo`, `editorial`…), so a
+  project declares only what it has; missing sections and their index entries disappear.
+  No meta sidebar: season/year live in the hero eyebrow only. Projects never link to
+  each other.
+- **Hero:** full-bleed band. Default crop is a fixed band (3:2 on mobile, `clamp(400px,
+  62vh, 720px)` on desktop); a project can set `heroRatio` to keep its own aspect
+  instead (used by Eva Fàbregas for the collage).
 - **Profile:** first-person bio + portrait + contact.
 - **Contact:** message form that emails Gisela, plus direct links.
 
@@ -44,8 +48,15 @@ Pages.
   moodboard and 2 line-up plates (rendered from clean lettering-free PDFs),
   colour board, 3 CLO 3D renders, a sketchbook process board, a draping photo,
   and 36 technical sheets (rendered from the high-quality PDF).
+- Second project: **Eva Fàbregas**, course project at ESDi, season Fall/Winter 25/26,
+  year 2025 — a textile collection read from the sculptural work of the artist.
+  Material: moodboard collage (also hero and card cover), 7-colour palette sampled
+  straight from the book, 2 line-up plates (10 looks) and 19 technical sheets.
+  No photography, no 3D: those sections simply do not exist here.
+  Copy ES is from the book; EN is a translation pending Gisela's review.
 - Asset sources for `npm run assets`: `TFG/`, `SobreMi/`, `miau/`, `_source/`
-  — all gitignored raw material.
+  — all gitignored raw material. `npm run assets:fabregas` reads
+  `_source/book-fabregas.pdf` (15 pages, 72 dpi art, spreads of two A4 panels).
 - Contact email: `gmateulo7@gmail.com` (form service: FormSubmit).
 - Instagram: `@ggggisela`.
 
@@ -71,4 +82,4 @@ Pages.
 
 ## Out of scope for v1
 
-- CMS or admin UI. Custom domain and DNS. More projects (DRESSAGE only for now).
+- CMS or admin UI. Custom domain and DNS. More projects.

@@ -16,19 +16,23 @@ const copy = d.i18n[lang];
 
 const chapters = [
   { id: 'concepto', label: t('project.concept'), show: true },
-  { id: 'moodboard', label: t('project.moodboard'), show: true },
+  { id: 'moodboard', label: t('project.moodboard'), show: Boolean(d.moodboard) },
   { id: 'paleta', label: t('project.palette'), show: d.palette.length > 0 },
   { id: 'lineup', label: t('project.lineup'), show: d.lineup.length > 0 },
   { id: 'clo', label: t('project.clo'), show: d.clo.length > 0 },
   { id: 'editorial', label: t('project.editorial'), show: d.editorial.length > 0 },
-  { id: 'proceso', label: t('project.process'), show: true },
+  { id: 'proceso', label: t('project.process'), show: Boolean(d.processBoard) },
   { id: 'fichas', label: t('project.fichas'), show: d.fichas.length > 0 },
 ].filter((c) => c.show);
 const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
 ---
 
 <article class="project">
-  <header class="hero">
+  <header
+    class="hero"
+    data-ratio={d.heroRatio ? 'custom' : undefined}
+    style={d.heroRatio ? `--hero-ratio:${d.heroRatio}` : undefined}
+  >
     <div class="hero-media">
       <Image
         src={d.cover}
@@ -70,12 +74,16 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
         </div>
       </section>
 
-      <section id="moodboard" class="section section--tight">
-        <div class="section-head">
-          <h2>{t('project.moodboard')}</h2>
-        </div>
-        <Plate src={d.moodboard} alt={lang === 'es' ? 'Moodboard de la colección' : 'Collection moodboard'} />
-      </section>
+      {
+        d.moodboard && (
+          <section id="moodboard" class="section section--tight">
+            <div class="section-head">
+              <h2>{t('project.moodboard')}</h2>
+            </div>
+            <Plate src={d.moodboard} alt={lang === 'es' ? 'Moodboard de la colección' : 'Collection moodboard'} />
+          </section>
+        )
+      }
 
       {
         d.palette.length > 0 && (
@@ -84,12 +92,12 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
               <h2>{t('project.palette')}</h2>
               <span class="mono">{d.palette.length}</span>
             </div>
-            <ul class="swatches">
+            <ul class="swatches" style={`--swatch-cols:${Math.min(d.palette.length, 8)}`}>
               {
                 d.palette.map((c) => (
                   <li class="swatch" data-reveal>
                     <span class="chip" style={`background:${c.hex}`} aria-hidden="true" />
-                    <span class="chip-name">{c.name}</span>
+                    {c.name && <span class="chip-name">{c.name}</span>}
                     <span class="chip-hex mono">{c.hex.toUpperCase()}</span>
                   </li>
                 ))
@@ -108,7 +116,7 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
             <div class="lineup">
               {d.lineup.map((src) => <Plate src={src} alt={lang === 'es' ? 'Line up de la colección' : 'Collection line up'} widths={[800, 1300, 1800]} />)}
             </div>
-            <p class="sec-caption mono">{t('project.lineupCaption')}</p>
+            <p class="sec-caption mono">{copy.lineupCaption ?? t('project.lineupCaption')}</p>
           </section>
         )
       }
@@ -147,23 +155,27 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
         )
       }
 
-      <section id="proceso" class="section section--tight">
-        <div class="section-head">
-          <h2>{t('project.process')}</h2>
-        </div>
-        <Plate src={d.processBoard} alt={lang === 'es' ? 'Páginas del sketchbook de investigación' : 'Research sketchbook pages'} />
-        <p class="sec-caption mono">{t('project.processCaption')}</p>
-        {
-          d.processMoulage && (
-            <>
-              <div class="process-gap">
-                <Plate src={d.processMoulage} alt={lang === 'es' ? 'Moulage y patronaje sobre maniquí' : 'Draping and pattern-making on the dress form'} />
-              </div>
-              <p class="sec-caption mono">{t('project.moulageCaption')}</p>
-            </>
-          )
-        }
-      </section>
+      {
+        d.processBoard && (
+          <section id="proceso" class="section section--tight">
+            <div class="section-head">
+              <h2>{t('project.process')}</h2>
+            </div>
+            <Plate src={d.processBoard} alt={lang === 'es' ? 'Páginas del sketchbook de investigación' : 'Research sketchbook pages'} />
+            <p class="sec-caption mono">{t('project.processCaption')}</p>
+            {
+              d.processMoulage && (
+                <>
+                  <div class="process-gap">
+                    <Plate src={d.processMoulage} alt={lang === 'es' ? 'Moulage y patronaje sobre maniquí' : 'Draping and pattern-making on the dress form'} />
+                  </div>
+                  <p class="sec-caption mono">{t('project.moulageCaption')}</p>
+                </>
+              )
+            }
+          </section>
+        )
+      }
 
       {
         d.fichas.length > 0 && (
@@ -222,7 +234,7 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
   }
   .hero-media {
     position: relative;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: var(--hero-ratio, 3 / 2);
     overflow: hidden;
   }
   .hero-media img {
@@ -338,8 +350,15 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
   }
   @media (min-width: 860px) {
     .hero-media {
-      aspect-ratio: auto;
       height: clamp(400px, 62vh, 720px);
+    }
+    .hero[data-ratio] .hero-media {
+      width: 100%;
+      height: auto;
+      max-height: min(80vh, 920px);
+    }
+    .hero[data-ratio] .hero-media img {
+      object-position: 50% 50%;
     }
     .hero-text {
       grid-template-columns: minmax(0, 1fr) auto;
@@ -358,7 +377,7 @@ const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
       padding-bottom: 0.6rem;
     }
     .swatches {
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(var(--swatch-cols, 6), minmax(0, 1fr));
     }
     .lineup {
       grid-template-columns: 1fr 1fr;
