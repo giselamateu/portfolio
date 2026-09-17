@@ -25,11 +25,10 @@ async function panel(n, side) {
   return { input: pageFile(n), left, top: 0, width: PANEL_W, height: PAGE_H };
 }
 
-async function crop(rect, outPath, { width, quality = 86, flatten = '#ffffff', trim = [] } = {}) {
+async function crop(rect, outPath, { width, quality = 86, flatten = '#ffffff' } = {}) {
   await mkdir(join(outPath, '..'), { recursive: true });
   let img = sharp(rect.input, { failOn: 'none' }).flatten({ background: flatten });
   if (rect.extract !== false) img = img.extract(rect);
-  for (const t of trim) img = img.trim({ background: t.background, threshold: t.threshold ?? 20 });
   if (width) img = img.resize({ width, fit: 'inside', withoutEnlargement: true });
   await img.jpeg({ quality, mozjpeg: true, progressive: true }).toFile(outPath);
 }
@@ -80,31 +79,6 @@ async function isBlank(rect) {
   return stats.channels[0].stdev < 6;
 }
 
-// Tight bounding box of everything that is not the given colour inside a region.
-// Used instead of trim(), which gives up when a single border pixel differs
-// (the page has red lettering sitting on the pink ground).
-async function bbox({ input, ...region }, bg, threshold = 30) {
-  const { data, info } = await sharp(input).extract(region).raw().toBuffer({ resolveWithObject: true });
-  const { width, height, channels } = info;
-  let minX = width, minY = height, maxX = -1, maxY = -1;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = (y * width + x) * channels;
-      const far =
-        Math.abs(data[i] - bg.r) > threshold ||
-        Math.abs(data[i + 1] - bg.g) > threshold ||
-        Math.abs(data[i + 2] - bg.b) > threshold;
-      if (!far) continue;
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
-    }
-  }
-  if (maxX < 0) return null;
-  return { input, left: region.left + minX, top: region.top + minY, width: maxX - minX + 1, height: maxY - minY + 1 };
-}
-
 async function main() {
   await rm(TMP, { recursive: true, force: true });
   await mkdir(TMP, { recursive: true });
@@ -142,30 +116,32 @@ async function main() {
     );
   }
 
-  // Fabric swatches: locate the red card on the pink page, then the photograph
-  // inside its red frame.
-  const fabricRegions = [
-    { input: pageFile(4), left: 55, top: 470, width: 545, height: 425 },
-    { input: pageFile(4), left: 587, top: 470, width: 545, height: 425 },
-    { input: pageFile(4), left: 1134, top: 470, width: 545, height: 425 },
+  // Fabric and trim swatches: the native rasters embedded on page 4. The red
+  // cards and pink ground are page furniture (vector), so these come out clean
+  // on white — no red anywhere. pdfimages numbers images and masks in object
+  // order; even indices are the photos, with the sizes asserted below.
+  const swatchDir = join(TMP, 'swatches');
+  await mkdir(swatchDir, { recursive: true });
+  execFileSync('pdfimages', ['-png', '-f', '4', '-l', '4', SRC_PDF, join(swatchDir, 's')], { stdio: 'ignore' });
+  const swatches = [
+    { num: 0, dir: 'fornituras', name: 'fornitura-01.jpg', expect: '165x194' },
+    { num: 2, dir: 'fornituras', name: 'fornitura-02.jpg', expect: '158x205' },
+    { num: 4, dir: 'tejidos', name: 'tejido-01.jpg', expect: '229x176' },
+    { num: 8, dir: 'tejidos', name: 'tejido-02.jpg', expect: '229x176' },
+    { num: 6, dir: 'tejidos', name: 'tejido-03.jpg', expect: '229x176' },
   ];
-  for (const [i, region] of fabricRegions.entries()) {
-    const card = await bbox(region, GROUND, 30);
-    if (!card) throw new Error(`tarjeta de tejido ${i + 1} no encontrada`);
-    const frame = await sharp(card.input).extract({ left: card.left + 3, top: card.top + 3, width: 1, height: 1 }).raw().toBuffer();
-    const inner = await bbox(card, { r: frame[0], g: frame[1], b: frame[2] }, 45);
-    await crop(inner ?? card, join(OUT, 'tejidos', `tejido-${String(i + 1).padStart(2, '0')}.jpg`), { width: 900 });
-  }
-
-  // Trims swatches: the red card of each fitting, sitting on the pink page.
-  const trimRegions = [
-    { input: pageFile(4), left: PANEL_W + 230, top: 250, width: 560, height: 700 },
-    { input: pageFile(4), left: PANEL_W + 940, top: 250, width: 560, height: 700 },
-  ];
-  for (const [i, region] of trimRegions.entries()) {
-    const card = await bbox(region, GROUND, 30);
-    if (!card) throw new Error(`tarjeta de fornituras ${i + 1} no encontrada`);
-    await crop(card, join(OUT, 'fornituras', `fornitura-${String(i + 1).padStart(2, '0')}.jpg`), { width: 900 });
+  for (const s of swatches) {
+    const file = join(swatchDir, `s-${String(s.num).padStart(3, '0')}.png`);
+    const meta = await sharp(file).metadata();
+    const size = `${meta.width}x${meta.height}`;
+    if (size !== s.expect) throw new Error(`muestra s-${s.num}: ${size}, se esperaba ${s.expect}`);
+    const outPath = join(OUT, s.dir, s.name);
+    await mkdir(join(outPath, '..'), { recursive: true });
+    await sharp(file, { failOn: 'none' })
+      .resize({ width: meta.width * 2, kernel: 'lanczos3' })
+      .sharpen({ sigma: 0.7 })
+      .jpeg({ quality: 88, mozjpeg: true, progressive: true })
+      .toFile(outPath);
   }
 
   const palette = await samplePalette();
