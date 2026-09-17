@@ -1,0 +1,62 @@
+---
+import { site } from '../config';
+
+interface Props {
+  size?: number;
+}
+const { size = 20 } = Astro.props;
+---
+
+<ul class="social" style={`--social-size:${size}px`}>
+  <li>
+    <a href={`mailto:${site.email}`} aria-label="Email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="m3.5 7 8.5 6 8.5-6" />
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a href={site.instagram} target="_blank" rel="me noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none" />
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a href={site.linkedin} target="_blank" rel="me noopener" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.2 8.4h4.6V23H.2V8.4zM8.2 8.4h4.4v2h.1c.6-1.2 2.1-2.4 4.4-2.4 4.7 0 5.6 3.1 5.6 7.1V23h-4.6v-7c0-1.7 0-3.8-2.3-3.8s-2.7 1.8-2.7 3.7v7.1H8.2V8.4z"
+        ></path>
+      </svg>
+    </a>
+  </li>
+</ul>
+
+<style>
+  .social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+  .social a {
+    display: inline-flex;
+    color: var(--bone);
+    transition: color 0.3s var(--ease);
+  }
+  .social a:hover,
+  .social a:focus-visible {
+    color: var(--accent);
+  }
+  .social svg {
+    display: block;
+    width: var(--social-size);
+    height: var(--social-size);
+  }
+</style>
