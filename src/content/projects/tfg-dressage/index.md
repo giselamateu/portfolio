@@ -52,7 +52,6 @@ editorial:
   - ./editorial/editorial-31.jpg
   - ./editorial/editorial-32.jpg
   - ./editorial/editorial-33.jpg
-  - ./editorial/editorial-34.jpg
 fichas:
   - ./fichas/ficha-01.jpg
   - ./fichas/ficha-02.jpg
