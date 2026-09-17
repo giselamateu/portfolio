@@ -82,7 +82,7 @@ async function isBlank(rect) {
 async function main() {
   await rm(TMP, { recursive: true, force: true });
   await mkdir(TMP, { recursive: true });
-  for (const dir of ['tejidos', 'fornituras', 'fichas']) {
+  for (const dir of ['fichas']) {
     await rm(join(OUT, dir), { recursive: true, force: true });
     await mkdir(join(OUT, dir), { recursive: true });
   }
@@ -116,34 +116,6 @@ async function main() {
     );
   }
 
-  // Fabric and trim swatches: the native rasters embedded on page 4. The red
-  // cards and pink ground are page furniture (vector), so these come out clean
-  // on white — no red anywhere. pdfimages numbers images and masks in object
-  // order; even indices are the photos, with the sizes asserted below.
-  const swatchDir = join(TMP, 'swatches');
-  await mkdir(swatchDir, { recursive: true });
-  execFileSync('pdfimages', ['-png', '-f', '4', '-l', '4', SRC_PDF, join(swatchDir, 's')], { stdio: 'ignore' });
-  const swatches = [
-    { num: 0, dir: 'fornituras', name: 'fornitura-01.jpg', expect: '165x194' },
-    { num: 2, dir: 'fornituras', name: 'fornitura-02.jpg', expect: '158x205' },
-    { num: 4, dir: 'tejidos', name: 'tejido-01.jpg', expect: '229x176' },
-    { num: 8, dir: 'tejidos', name: 'tejido-02.jpg', expect: '229x176' },
-    { num: 6, dir: 'tejidos', name: 'tejido-03.jpg', expect: '229x176' },
-  ];
-  for (const s of swatches) {
-    const file = join(swatchDir, `s-${String(s.num).padStart(3, '0')}.png`);
-    const meta = await sharp(file).metadata();
-    const size = `${meta.width}x${meta.height}`;
-    if (size !== s.expect) throw new Error(`muestra s-${s.num}: ${size}, se esperaba ${s.expect}`);
-    const outPath = join(OUT, s.dir, s.name);
-    await mkdir(join(outPath, '..'), { recursive: true });
-    await sharp(file, { failOn: 'none' })
-      .resize({ width: meta.width * 2, kernel: 'lanczos3' })
-      .sharpen({ sigma: 0.7 })
-      .jpeg({ quality: 88, mozjpeg: true, progressive: true })
-      .toFile(outPath);
-  }
-
   const palette = await samplePalette();
 
   // Technical sheets: one per non-blank panel of pages 6-15.
@@ -159,7 +131,7 @@ async function main() {
 
   await rm(TMP, { recursive: true, force: true });
   console.log('palette:', palette.length, palette.join(' '));
-  console.log('fichas:', n, '| tejidos: 3 | fornituras: 2 | moodboard + 2 lineup: ok');
+  console.log('fichas:', n, '| moodboard + card cover + 2 lineup: ok');
 }
 
 main().catch((e) => {

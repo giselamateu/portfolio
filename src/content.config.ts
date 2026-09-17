@@ -37,14 +37,6 @@ const projects = defineCollection({
       processMoulage: image().optional(),
       editorial: z.array(image()).default([]),
       fichas: z.array(image()).default([]),
-      tejidos: z.array(image()).default([]),
-      tejidoInfo: z
-        .array(z.object({ name: z.string(), price: z.string(), supplier: z.string() }))
-        .default([]),
-      fornituras: z.array(image()).default([]),
-      fornituraInfo: z
-        .array(z.object({ name: z.string(), price: z.string(), supplier: z.string() }))
-        .default([]),
       i18n: z.object({ es: localized, en: localized }),
     }),
 });

@@ -19,20 +19,6 @@ palette:
 lineup:
   - ./lineup-01.jpg
   - ./lineup-02.jpg
-tejidos:
-  - ./tejidos/tejido-01.jpg
-  - ./tejidos/tejido-02.jpg
-  - ./tejidos/tejido-03.jpg
-tejidoInfo:
-  - { name: Tafetán de poliéster, price: '10 €/m', supplier: 'Mel o Coto, Sabadell' }
-  - { name: Guata laminada, price: '7 €/m', supplier: 'Mel o Coto, Sabadell' }
-  - { name: Guata en fibra, price: '10 €/kg', supplier: 'Espacio Descanso' }
-fornituras:
-  - ./fornituras/fornitura-01.jpg
-  - ./fornituras/fornitura-02.jpg
-fornituraInfo:
-  - { name: Cremallera 45 cm azul cielo, price: '2,90 €', supplier: 'Figuerola' }
-  - { name: Goma elástica, price: '2,60 €', supplier: 'Figuerola' }
 fichas:
   - ./fichas/ficha-01.jpg
   - ./fichas/ficha-02.jpg

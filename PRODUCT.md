@@ -24,8 +24,8 @@ Pages.
   margins, ordered by `order`. Two entries: DRESSAGE and Eva Fàbregas.
 - **Instagram:** own page with the feed (`/instagram`, `/en/instagram`).
 - **Project:** hero → sticky chapter index (side rail on desktop, strip on mobile, with
-  scrollspy) → concept → moodboard → palette → fabrics → trims → line-up → 3D·CLO
-  → editorial → process → technical sheets → back link. Every section is optional in
+  scrollspy) → concept → moodboard → palette → line-up → 3D·CLO → editorial →
+  process → technical sheets → back link. Every section is optional in
   the schema (`moodboard`, `paletteBoard`, `processBoard`, `clo`, `editorial`…), so a
   project declares only what it has; missing sections and their index entries disappear.
   No meta sidebar: season/year live in the hero eyebrow only. Projects never link to
@@ -51,8 +51,8 @@ Pages.
 - Second project: **Eva Fàbregas**, course project at ESDi, season Fall/Winter 25/26,
   year 2025 — a textile collection read from the sculptural work of the artist.
   Material: moodboard collage (also hero and card cover), 7-colour palette sampled
-  straight from the book, 3 fabric swatches, 2 trims, 2 line-up plates (10 looks) and
-  19 technical sheets. No photography, no 3D: those sections simply do not exist here.
+  straight from the book, 2 line-up plates (10 looks) and 19 technical sheets.
+  No photography, no 3D: those sections simply do not exist here.
   Copy ES is from the book; EN is a translation pending Gisela's review.
 - Asset sources for `npm run assets`: `TFG/`, `SobreMi/`, `miau/`, `_source/`
   — all gitignored raw material. `npm run assets:fabregas` reads
