@@ -1,0 +1,145 @@
+---
+import { localePath, otherLang, useTranslations, base, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  projectSlug?: string;
+}
+const { lang, projectSlug } = Astro.props;
+const t = useTranslations(lang);
+const other = otherLang(lang);
+
+const path = base && Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) : Astro.url.pathname;
+const onAbout = /(^|\/)(sobre|about)\/?$/.test(path);
+const onContact = /(^|\/)(contacto|contact)\/?$/.test(path);
+
+const onInstagram = /(^|\/)instagram\/?$/.test(path);
+const projectsPath = lang === 'es' ? 'proyectos' : 'projects';
+const instagramPath = 'instagram';
+
+let langTarget: string;
+if (projectSlug) {
+  langTarget = localePath(other, other === 'es' ? `proyectos/${projectSlug}` : `projects/${projectSlug}`);
+} else if (onAbout) {
+  langTarget = localePath(other, other === 'es' ? 'sobre' : 'about');
+} else if (onContact) {
+  langTarget = localePath(other, other === 'es' ? 'contacto' : 'contact');
+} else if (onInstagram) {
+  langTarget = localePath(other, 'instagram');
+} else {
+  langTarget = localePath(other);
+}
+
+const workHref = localePath(lang, projectsPath);
+const instagramHref = localePath(lang, instagramPath);
+const aboutHref = localePath(lang, lang === 'es' ? 'sobre' : 'about');
+const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
+---
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href={localePath(lang)} aria-label={t('site.name')}>
+      <span class="brand-name display">{t('site.name')}</span>
+      <span class="brand-role mono">{t('site.role')}</span>
+    </a>
+
+    <nav class="nav" aria-label={lang === 'es' ? 'Principal' : 'Main'}>
+      <a class="nav-link nav-work" href={workHref}>{t('nav.work')}</a>
+      <a class="nav-link nav-instagram" href={instagramHref}>{t('nav.instagram')}</a>
+      <a class="nav-link" href={aboutHref}>{t('nav.about')}</a>
+      <a class="nav-link" href={contactHref}>{t('nav.contact')}</a>
+      <a class="lang" href={langTarget} aria-label={t('lang.switch')} hreflang={other}>
+        <span class:list={[{ on: lang === 'es' }]}>ES</span>
+        <span aria-hidden="true">/</span>
+        <span class:list={[{ on: lang === 'en' }]}>EN</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--negro) 92%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    max-width: 1680px;
+    margin-inline: auto;
+    padding: 0.85rem var(--gutter);
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    min-width: 0;
+  }
+  .brand-name {
+    font-size: clamp(1rem, 0.8rem + 0.9vw, 1.35rem);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .brand-role {
+    display: none;
+    font-size: 0.66rem;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 2.4rem);
+  }
+  .nav-link,
+  .lang {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    transition: color 0.35s var(--ease);
+  }
+  .nav-link:hover,
+  .nav-link:focus-visible,
+  .lang:hover,
+  .lang:focus-visible {
+    color: var(--bone);
+  }
+  .lang {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+    padding-left: clamp(0.6rem, 1.5vw, 1.4rem);
+  }
+  .lang .on {
+    color: var(--accent);
+  }
+  @media (min-width: 720px) {
+    .brand-role {
+      display: inline;
+    }
+  }
+  @media (max-width: 639px) {
+    .brand-name {
+      font-size: 0.95rem;
+    }
+    .nav {
+      width: 100%;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .nav-link,
+    .lang {
+      font-size: 0.66rem;
+      letter-spacing: 0.03em;
+    }
+    .lang {
+      padding-left: 0.7rem;
+    }
+  }
+</style>

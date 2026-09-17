@@ -1,0 +1,213 @@
+---
+import { site } from '../config';
+import { useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const endpoint = `https://formsubmit.co/ajax/${site.email}`;
+---
+
+<section class="wrap section contact">
+  <div class="section-head">
+    <h1 class="contact-title">{t('contact.title')}</h1>
+  </div>
+
+  <div class="contact-grid">
+    <form class="form" id="contact-form" novalidate data-endpoint={endpoint}>
+      <label class="field">
+        <span class="mono">{t('contact.name')} <em>{t('contact.required')}</em></span>
+        <input type="text" name="name" required autocomplete="name" />
+      </label>
+      <label class="field">
+        <span class="mono">{t('contact.email')} <em>{t('contact.required')}</em></span>
+        <input type="email" name="email" required autocomplete="email" />
+      </label>
+      <label class="field">
+        <span class="mono">{t('contact.message')} <em>{t('contact.required')}</em></span>
+        <textarea name="message" rows="6" required></textarea>
+      </label>
+      <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" class="honey" />
+      <input type="hidden" name="_subject" value="Nuevo mensaje desde el portfolio" />
+
+      <div class="form-actions">
+        <button class="btn" type="submit" data-send={t('contact.send')} data-sending={t('contact.sending')}>
+          {t('contact.send')}
+        </button>
+        <p class="form-status mono" role="status" aria-live="polite" data-success={t('contact.success')} data-error={t('contact.error')}></p>
+      </div>
+    </form>
+
+    <aside class="contact-direct" data-reveal>
+      <p class="mono">{t('contact.direct')}</p>
+      <a class="contact-value" href={`mailto:${site.email}`}>{site.email}</a>
+      <a class="link" href={site.instagram} target="_blank" rel="me noopener">@{site.instagramHandle}</a>
+      <p class="mono availability">{t('about.availability')}</p>
+    </aside>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  if (form) {
+    const status = form.querySelector<HTMLElement>('.form-status');
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const endpoint = form.dataset.endpoint!;
+      const data = Object.fromEntries(new FormData(form).entries());
+      if (button) {
+        button.disabled = true;
+        button.textContent = button.dataset.sending || '…';
+      }
+      if (status) status.textContent = '';
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        if (status) {
+          status.textContent = status.dataset.success || 'OK';
+          status.classList.add('is-ok');
+        }
+        form.reset();
+      } catch {
+        if (status) {
+          status.textContent = status.dataset.error || 'Error';
+          status.classList.add('is-err');
+        }
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = button.dataset.send || 'Send';
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+  .form {
+    display: grid;
+    gap: 1.6rem;
+    max-width: 44rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.55rem;
+  }
+  .field em {
+    font-style: normal;
+    color: var(--bone-dim);
+  }
+  input,
+  textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+    font-weight: 380;
+    color: var(--bone);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line-strong);
+    padding: 0.5rem 0;
+    transition: border-color 0.35s var(--ease);
+  }
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+  .honey {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--negro);
+    background: var(--bone);
+    border: 1px solid var(--bone);
+    padding: 0.85rem 1.6rem;
+    cursor: pointer;
+    transition: background 0.35s var(--ease), color 0.35s var(--ease);
+  }
+  .btn:hover,
+  .btn:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--negro);
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .form-status {
+    min-height: 1.2em;
+  }
+  .form-status.is-ok {
+    color: var(--accent);
+  }
+  .form-status.is-err {
+    color: #d98b6a;
+  }
+  .contact-direct {
+    display: grid;
+    justify-items: start;
+    gap: 0.9rem;
+    align-content: start;
+  }
+  .contact-value {
+    font-size: var(--step-1);
+    padding-bottom: 0.2rem;
+    transition: color 0.35s var(--ease);
+  }
+  .contact-value:hover,
+  .contact-value:focus-visible {
+    color: var(--accent);
+  }
+  .availability {
+    margin-top: 0.8rem;
+    max-width: 34ch;
+    line-height: 1.6;
+  }
+  @media (min-width: 860px) {
+    .contact-grid {
+      grid-template-columns: 1.5fr 1fr;
+      align-items: start;
+    }
+  }
+</style>

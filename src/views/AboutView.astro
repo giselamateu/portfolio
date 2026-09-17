@@ -1,0 +1,114 @@
+---
+import { Image } from 'astro:assets';
+import { site } from '../config';
+import { useTranslations, localePath, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  image?: ImageMetadata;
+  imageAlt?: string;
+}
+const { lang, image, imageAlt } = Astro.props;
+const t = useTranslations(lang);
+const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
+---
+
+<section class="wrap section about">
+  <div class="about-head">
+    <h1 class="display about-title">{t('about.title')}</h1>
+  </div>
+  <div class="about-grid">
+    <div class="about-body">
+      <p class="lede" data-reveal>{t('about.lead')}</p>
+      <div class="prose" data-reveal style="--reveal-delay:100ms">
+        <p>{t('about.body1')}</p>
+        <p>{t('about.body2')}</p>
+      </div>
+    </div>
+    {
+      image && (
+        <div class="about-media media" data-reveal style="--reveal-delay:160ms">
+          <Image src={image} alt={imageAlt ?? ''} widths={[600, 900, 1200]} sizes="(min-width: 860px) 30vw, 92vw" loading="lazy" decoding="async" />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<section class="wrap section--tight">
+  <div class="section-head">
+    <h2>{t('about.contact')}</h2>
+  </div>
+  <div class="contact" data-reveal>
+    <div class="contact-row">
+      <span class="mono">{t('about.emailLabel')}</span>
+      <a class="contact-value" href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+    <div class="contact-row">
+      <span class="mono">{t('about.instagramLabel')}</span>
+      <a class="contact-value" href={site.instagram} target="_blank" rel="me noopener">@{site.instagramHandle}</a>
+    </div>
+    <p class="mono availability">{t('about.availability')}</p>
+    <a class="link" href={contactHref}>{t('about.write')}</a>
+  </div>
+</section>
+
+<style>
+  .about-head {
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  }
+  .about-title {
+    font-size: var(--step-3);
+  }
+  .about-grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    grid-template-columns: 1fr;
+  }
+  .about-body {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: center;
+    text-align: center;
+  }
+  .about-media {
+    aspect-ratio: 1 / 1;
+    max-width: 300px;
+  }
+  .about-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .contact {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 40rem;
+  }
+  .contact-row {
+    display: grid;
+    gap: 0.2rem;
+    padding-block: 0.8rem;
+  }
+  .contact-value {
+    font-size: var(--step-1);
+    transition: color 0.35s var(--ease);
+  }
+  .contact-value:hover,
+  .contact-value:focus-visible {
+    color: var(--accent);
+  }
+  .availability {
+    margin-top: 1.4rem;
+  }
+  @media (min-width: 860px) {
+    .about-grid {
+      grid-template-columns: 1.6fr 1fr;
+      align-items: start;
+    }
+    .about-media {
+      max-width: 280px;
+      justify-self: end;
+    }
+  }
+</style>

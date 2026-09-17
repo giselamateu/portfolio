@@ -1,0 +1,237 @@
+---
+import '@fontsource-variable/archivo';
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { getLang, useTranslations, withBase, type Lang } from '../i18n/utils';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: Lang;
+  projectSlug?: string;
+  footer?: boolean;
+}
+
+const { title, description, projectSlug, footer = true } = Astro.props;
+const lang: Lang = Astro.props.lang ?? getLang(Astro.url);
+const t = useTranslations(lang);
+const pageTitle = title ? `${title} — ${t('site.name')}` : `${t('site.name')} — ${t('site.role')}`;
+const pageDesc =
+  description ??
+  (lang === 'es'
+    ? 'Portfolio de Gisela Mateu, diseñadora de moda. Colecciones, proceso y documentación técnica.'
+    : 'Portfolio of Gisela Mateu, fashion designer. Collections, process and technical documentation.');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body>
+    <!--
+      DIRECTION CONTRACT — seed: dossier-restraint
+      THESIS: A graduate collection presented as a technical dossier — the garment as structure — in the collection's own palette, refusing the editorial-serif portfolio default.
+      OWN-WORLD: Pure white ground (#FFFFFF), ink text, colour sampled from the collection's own board; Impact display in uppercase; Neue Montreal (Inter fallback) for everything else, labels set uppercase with tracking; no rules, spacing does the work; an even, airy project grid.
+      STORY: The entry names the designer in one viewport; every project carries equal weight; the work reads as restraint-as-design; contact takes one tap.
+      FIRST VIEWPORT: Small square portrait, name at display scale, one-line outlook, a single profile link; proyectos top-right. No scroll.
+      FORM: Experience mode; no-scroll entry, even minimalist project grid, full editorial dossier; seed dossier-restraint.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+    -->
+    <a class="skip" href="#main">{t('nav.skip')}</a>
+    <SiteHeader lang={lang} projectSlug={projectSlug} />
+    <main id="main"><slot /></main>
+    {footer && <SiteFooter lang={lang} />}
+
+    <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true">
+      <button class="lb-btn lb-close" type="button" data-lb-close aria-label={t('gallery.close')}>×</button>
+      <button class="lb-btn lb-prev" type="button" data-lb-prev aria-label={t('gallery.prev')}>←</button>
+      <div class="lb-stage">
+        <img id="lb-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" />
+        <p class="lb-counter" id="lb-counter" aria-live="polite"></p>
+      </div>
+      <button class="lb-btn lb-next" type="button" data-lb-next aria-label={t('gallery.next')}>→</button>
+    </div>
+
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+      );
+      document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lb-img') as HTMLImageElement | null;
+      const lbCounter = document.getElementById('lb-counter');
+      lbImg?.addEventListener('load', () => lbImg.classList.remove('is-loading'));
+      lbImg?.addEventListener('error', () => lbImg.classList.remove('is-loading'));
+      let group: HTMLElement[] = [];
+      let index = -1;
+      let lastOpen = 0;
+      let restoreFocus: HTMLElement | null = null;
+
+      // Tiles are read per gallery, so navigation never leaks into another
+      // gallery on the same page and the shown file is always the clicked one.
+      function tilesIn(tile: HTMLElement): HTMLElement[] {
+        const wrap = tile.closest('figure.gallery-wrap');
+        return Array.from((wrap ?? document).querySelectorAll<HTMLElement>('[data-lightbox]'));
+      }
+
+      function show(i: number) {
+        if (!lb || !lbImg || group.length === 0) return;
+        index = ((i % group.length) + group.length) % group.length;
+        const tile = group[index];
+        const src = tile.dataset.full || '';
+        // Hide the previous photo until the new one is decoded, so the modal
+        // never flashes an image other than the one that was clicked.
+        if (lbImg.getAttribute('src') !== src) {
+          lbImg.classList.add('is-loading');
+          lbImg.src = src;
+        }
+        lbImg.alt = tile.dataset.alt || '';
+        if (lbImg.complete && lbImg.naturalWidth > 0) lbImg.classList.remove('is-loading');
+        if (lbCounter) lbCounter.textContent = `${index + 1} / ${group.length}`;
+        lb.hidden = false;
+        document.body.style.overflow = 'hidden';
+        for (const n of [index + 1, index - 1]) {
+          const t = group[(n % group.length + group.length) % group.length];
+          if (t?.dataset.full) new Image().src = t.dataset.full;
+        }
+      }
+
+      function close() {
+        if (!lb || lb.hidden) return;
+        lb.hidden = true;
+        lbImg?.removeAttribute('src');
+        document.body.style.overflow = '';
+        restoreFocus?.focus();
+        restoreFocus = null;
+      }
+
+      // One delegated listener: no duplicate/stale handlers, no double-fire on touch.
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const tile = target.closest<HTMLElement>('[data-lightbox]');
+        if (!tile) return;
+        const now = performance.now();
+        if (now - lastOpen < 350) return;
+        lastOpen = now;
+        group = tilesIn(tile);
+        restoreFocus = tile;
+        show(group.indexOf(tile));
+      });
+
+      document.querySelector('[data-lb-close]')?.addEventListener('click', close);
+      document.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(index - 1));
+      document.querySelector('[data-lb-next]')?.addEventListener('click', () => show(index + 1));
+      lb?.addEventListener('click', (e) => {
+        if (e.target === lb) close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!lb || lb.hidden) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowLeft') show(index - 1);
+        if (e.key === 'ArrowRight') show(index + 1);
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--bone);
+    color: var(--negro);
+    padding: 0.6rem 1rem;
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+  }
+  .skip:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: clamp(0.5rem, 3vw, 2.5rem);
+    /* the viewer stays dark on the paper world so plates keep their punch */
+    background: color-mix(in srgb, #070404 95%, transparent);
+  }
+  .lightbox[hidden] {
+    display: none;
+  }
+  .lb-stage {
+    grid-column: 2;
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+    min-height: 0;
+  }
+  #lb-img {
+    max-width: 100%;
+    max-height: 84vh;
+    object-fit: contain;
+    background: #100d0c;
+    transition: opacity 0.18s ease;
+  }
+  #lb-img.is-loading {
+    opacity: 0;
+  }
+  .lb-counter {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ab9e8d;
+  }
+  .lb-btn {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    line-height: 1;
+    width: 2.6rem;
+    height: 2.6rem;
+    color: #ece5da;
+    background: transparent;
+    border: 1px solid color-mix(in srgb, #7b6651 45%, transparent);
+    cursor: pointer;
+    transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+  .lb-btn:hover,
+  .lb-btn:focus-visible {
+    color: #c39a63;
+    border-color: color-mix(in srgb, #7b6651 72%, transparent);
+  }
+  .lb-close {
+    position: absolute;
+    top: clamp(0.5rem, 3vw, 2.5rem);
+    right: clamp(0.5rem, 3vw, 2.5rem);
+    z-index: 1;
+  }
+</style>

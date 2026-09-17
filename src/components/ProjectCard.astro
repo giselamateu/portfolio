@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { localePath, type Lang } from '../i18n/utils';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  lang: Lang;
+}
+const { project, lang } = Astro.props;
+const href = localePath(lang, lang === 'es' ? `proyectos/${project.id}` : `projects/${project.id}`);
+---
+
+<a class="card" href={href} data-reveal>
+  <span class="media card-media">
+    <Image
+      src={project.data.cardCover ?? project.data.cover}
+      alt={project.data.coverAlt}
+      widths={[600, 900, 1300]}
+      sizes="(min-width: 900px) 44vw, 92vw"
+      loading="lazy"
+      decoding="async"
+    />
+  </span>
+  <span class="card-body">
+    <span class="card-title display">{project.data.title}</span>
+    <span class="card-meta mono">
+      <span>{project.data.season}</span>
+      <span aria-hidden="true">·</span>
+      <span>{project.data.year}</span>
+    </span>
+  </span>
+</a>
+
+<style>
+  .card {
+    display: grid;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 230px;
+  }
+  @media (min-width: 1150px) {
+    .card {
+      max-width: 260px;
+    }
+  }
+  .card-media {
+    display: block;
+    aspect-ratio: 3 / 4;
+  }
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-body {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .card-title {
+    font-size: var(--step-0);
+    letter-spacing: 0.02em;
+    transition: color 0.35s var(--ease);
+  }
+  .card-meta {
+    display: inline-flex;
+    gap: 0.5rem;
+  }
+  .card:hover .card-title,
+  .card:focus-visible .card-title {
+    color: var(--accent);
+  }
+</style>

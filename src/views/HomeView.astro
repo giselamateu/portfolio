@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import profile from '../assets/profile.jpg';
+import { localePath, useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const aboutHref = localePath(lang, lang === 'es' ? 'sobre' : 'about');
+---
+
+<section class="entry wrap">
+  <div class="entry-photo">
+    <Image
+      src={profile}
+      alt={lang === 'es' ? 'Retrato de Gisela Mateu' : 'Portrait of Gisela Mateu'}
+      widths={[320, 480, 640]}
+      sizes="(min-width: 900px) 20vw, 46vw"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+  </div>
+  <h1 class="display entry-name">{t('site.name')}</h1>
+  <p class="entry-tag">{t('home.tagline')}</p>
+  <a class="link entry-cta" href={aboutHref}>{t('home.heroCta')}</a>
+</section>
+
+<style>
+  .entry {
+    min-height: calc(100vh - 140px);
+    min-height: calc(100dvh - 140px);
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: clamp(0.9rem, 2.4vh, 1.6rem);
+    text-align: center;
+    padding-block: clamp(1rem, 4vh, 2.5rem);
+  }
+  .entry-photo {
+    width: clamp(120px, 18vh, 172px);
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--carbon);
+  }
+  .entry-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+  }
+  .entry-name {
+    font-size: var(--step-3);
+  }
+  .entry-tag {
+    font-size: var(--step-0);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 34ch;
+    color: var(--bone-dim);
+    text-wrap: balance;
+  }
+  .entry-cta {
+    margin-top: 0.4rem;
+  }
+</style>

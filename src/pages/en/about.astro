@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AboutView from '../../views/AboutView.astro';
+import profile from '../../assets/profile.jpg';
+---
+
+<BaseLayout lang="en" title="About" description="Profile and contact of Gisela Mateu, fashion designer based in Barcelona.">
+  <AboutView lang="en" image={profile} imageAlt="Portrait of Gisela Mateu" />
+</BaseLayout>

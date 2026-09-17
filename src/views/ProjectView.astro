@@ -1,0 +1,389 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { localePath, useTranslations, type Lang } from '../i18n/utils';
+import Gallery from '../components/Gallery.astro';
+import Plate from '../components/Plate.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  lang: Lang;
+}
+const { project, lang } = Astro.props;
+const t = useTranslations(lang);
+const d = project.data;
+const copy = d.i18n[lang];
+
+const chapters = [
+  { id: 'concepto', label: t('project.concept'), show: true },
+  { id: 'moodboard', label: t('project.moodboard'), show: true },
+  { id: 'paleta', label: t('project.palette'), show: d.palette.length > 0 },
+  { id: 'lineup', label: t('project.lineup'), show: d.lineup.length > 0 },
+  { id: 'clo', label: t('project.clo'), show: d.clo.length > 0 },
+  { id: 'editorial', label: t('project.editorial'), show: d.editorial.length > 0 },
+  { id: 'proceso', label: t('project.process'), show: true },
+  { id: 'fichas', label: t('project.fichas'), show: d.fichas.length > 0 },
+].filter((c) => c.show);
+const indexLabel = lang === 'es' ? 'Índice del proyecto' : 'Project index';
+---
+
+<article class="project">
+  <header class="hero">
+    <div class="hero-media">
+      <Image
+        src={d.cover}
+        alt={d.coverAlt}
+        widths={[900, 1400, 1900, 2400]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+    <div class="hero-text wrap">
+      <p class="mono hero-eyebrow">{d.season} · {d.year}</p>
+      <h1 class="display hero-title">{d.title}</h1>
+      <p class="hero-sub">{copy.subtitle}</p>
+    </div>
+  </header>
+
+  <nav class="chapters-strip" aria-label={indexLabel}>
+    <div class="strip-row">
+      {chapters.map((c) => <a href={`#${c.id}`} data-chapter={c.id}>{c.label}</a>)}
+    </div>
+  </nav>
+
+  <div class="wrap project-main">
+    <aside class="chapters" aria-label={indexLabel}>
+      <ul>
+        {chapters.map((c) => <li><a href={`#${c.id}`} data-chapter={c.id}>{c.label}</a></li>)}
+      </ul>
+    </aside>
+
+    <div class="project-sections">
+      <section id="concepto" class="section">
+        <div class="section-head">
+          <h2>{t('project.concept')}</h2>
+        </div>
+        <div class="prose" data-reveal>
+          {copy.concept.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </section>
+
+      <section id="moodboard" class="section section--tight">
+        <div class="section-head">
+          <h2>{t('project.moodboard')}</h2>
+        </div>
+        <Plate src={d.moodboard} alt={lang === 'es' ? 'Moodboard de la colección' : 'Collection moodboard'} />
+      </section>
+
+      {
+        d.palette.length > 0 && (
+          <section id="paleta" class="section section--tight">
+            <div class="section-head">
+              <h2>{t('project.palette')}</h2>
+              <span class="mono">{d.palette.length}</span>
+            </div>
+            <ul class="swatches">
+              {
+                d.palette.map((c) => (
+                  <li class="swatch" data-reveal>
+                    <span class="chip" style={`background:${c.hex}`} aria-hidden="true" />
+                    <span class="chip-name">{c.name}</span>
+                    <span class="chip-hex mono">{c.hex.toUpperCase()}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        d.lineup.length > 0 && (
+          <section id="lineup" class="section section--tight">
+            <div class="section-head">
+              <h2>{t('project.lineup')}</h2>
+            </div>
+            <div class="lineup">
+              {d.lineup.map((src) => <Plate src={src} alt={lang === 'es' ? 'Line up de la colección' : 'Collection line up'} widths={[800, 1300, 1800]} />)}
+            </div>
+            <p class="sec-caption mono">{t('project.lineupCaption')}</p>
+          </section>
+        )
+      }
+
+      {
+        d.clo.length > 0 && (
+          <section id="clo" class="section section--tight">
+            <div class="section-head">
+              <h2>{t('project.clo')}</h2>
+              <span class="mono">{String(d.clo.length).padStart(2, '0')}</span>
+            </div>
+            <Gallery
+              images={d.clo}
+              altBase={lang === 'es' ? 'Render 3D de la colección en CLO' : 'CLO 3D render of the collection'}
+              columns={3}
+              sizes="(min-width: 1000px) 30vw, 92vw"
+            />
+            <p class="sec-caption mono">{t('project.cloCaption')}</p>
+          </section>
+        )
+      }
+
+      {
+        d.editorial.length > 0 && (
+          <section id="editorial" class="section">
+            <div class="section-head">
+              <h2>{t('project.editorial')}</h2>
+              <span class="mono">{String(d.editorial.length).padStart(2, '0')}</span>
+            </div>
+            <Gallery
+              images={d.editorial}
+              altBase={lang === 'es' ? 'Fotografía editorial de la colección' : 'Collection editorial photography'}
+              columns={3}
+            />
+          </section>
+        )
+      }
+
+      <section id="proceso" class="section section--tight">
+        <div class="section-head">
+          <h2>{t('project.process')}</h2>
+        </div>
+        <Plate src={d.processBoard} alt={lang === 'es' ? 'Páginas del sketchbook de investigación' : 'Research sketchbook pages'} />
+        <p class="sec-caption mono">{t('project.processCaption')}</p>
+        {
+          d.processMoulage && (
+            <>
+              <div class="process-gap">
+                <Plate src={d.processMoulage} alt={lang === 'es' ? 'Moulage y patronaje sobre maniquí' : 'Draping and pattern-making on the dress form'} />
+              </div>
+              <p class="sec-caption mono">{t('project.moulageCaption')}</p>
+            </>
+          )
+        }
+      </section>
+
+      {
+        d.fichas.length > 0 && (
+          <section id="fichas" class="section">
+            <div class="section-head">
+              <h2>{t('project.fichas')}</h2>
+              <span class="mono">{String(d.fichas.length).padStart(2, '0')}</span>
+            </div>
+            <Gallery
+              images={d.fichas}
+              altBase={lang === 'es' ? 'Ficha técnica de prenda' : 'Garment technical sheet'}
+              columns={4}
+              sizes="(min-width: 1200px) 22vw, 45vw"
+            />
+            <p class="sec-caption mono">{t('project.fichasCaption')}</p>
+          </section>
+        )
+      }
+
+      <section class="section--tight back">
+        <a class="link" href={localePath(lang, lang === 'es' ? 'proyectos' : 'projects')}>{t('project.back')}</a>
+      </section>
+    </div>
+  </div>
+</article>
+
+<script>
+  const header = document.querySelector('.site-header');
+  const setHeaderH = () => {
+    const h = header?.getBoundingClientRect().height ?? 64;
+    document.documentElement.style.setProperty('--header-h', `${Math.ceil(h)}px`);
+  };
+  setHeaderH();
+  window.addEventListener('resize', setHeaderH);
+
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-chapter]'));
+  const targets = links
+    .map((a) => document.getElementById(a.dataset.chapter ?? ''))
+    .filter((el): el is HTMLElement => el !== null);
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          links.forEach((a) => a.classList.toggle('is-active', a.dataset.chapter === entry.target.id));
+        }
+      }
+    },
+    { rootMargin: '-35% 0px -55% 0px' }
+  );
+  targets.forEach((el) => spy.observe(el));
+</script>
+
+<style>
+  .hero {
+    padding-top: clamp(0.75rem, 2vw, 1.5rem);
+  }
+  .hero-media {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+  }
+  .hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 58%;
+  }
+  .hero-text {
+    display: grid;
+    gap: 0.3rem;
+    padding-block: clamp(1.4rem, 3.5vw, 2.6rem) clamp(1.6rem, 4vw, 3rem);
+  }
+  .hero-title {
+    font-size: clamp(2.6rem, 8vw, 5.6rem);
+  }
+  .hero-sub {
+    font-size: var(--step-1);
+    color: var(--bone-dim);
+  }
+  .chapters-strip {
+    position: sticky;
+    top: var(--header-h, 64px);
+    z-index: 40;
+    background: color-mix(in srgb, var(--negro) 93%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .strip-row {
+    display: flex;
+    gap: 1.4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 1680px;
+    margin-inline: auto;
+    padding: 0.8rem var(--gutter);
+  }
+  .strip-row::-webkit-scrollbar {
+    display: none;
+  }
+  .chapters-strip a,
+  .chapters a {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--bone-dim);
+    transition: color 0.3s var(--ease);
+  }
+  .chapters-strip a:hover,
+  .chapters-strip a:focus-visible,
+  .chapters a:hover,
+  .chapters a:focus-visible {
+    color: var(--bone);
+  }
+  .chapters-strip a.is-active,
+  .chapters a.is-active {
+    color: var(--accent);
+  }
+  .project-main {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .chapters {
+    display: none;
+  }
+  .project-sections {
+    min-width: 0;
+  }
+  .project-sections section[id] {
+    scroll-margin-top: calc(var(--header-h, 64px) + 84px);
+  }
+  .prose p {
+    max-width: 58ch;
+  }
+  .swatches {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(0.8rem, 2vw, 1.6rem);
+  }
+  .swatch {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .chip {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+  }
+  .chip-name {
+    font-size: var(--step-0);
+  }
+  .chip-hex {
+    font-size: 0.66rem;
+  }
+  .lineup {
+    display: grid;
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+  .sec-caption {
+    margin-top: 1.2rem;
+    max-width: 60ch;
+    line-height: 1.6;
+  }
+  .process-gap {
+    margin-top: clamp(2rem, 5vw, 4rem);
+  }
+  .back {
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  @media (min-width: 860px) {
+    .hero-media {
+      aspect-ratio: auto;
+      height: clamp(400px, 62vh, 720px);
+    }
+    .hero-text {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: clamp(2rem, 6vw, 5rem);
+    }
+    .hero-eyebrow {
+      grid-column: 1 / -1;
+    }
+    .hero-title {
+      font-size: clamp(3.2rem, 7vw, 6rem);
+    }
+    .hero-sub {
+      justify-self: end;
+      text-align: right;
+      padding-bottom: 0.6rem;
+    }
+    .swatches {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .lineup {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1100px) {
+    .chapters-strip {
+      display: none;
+    }
+    .project-main {
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+      align-items: start;
+    }
+    .chapters {
+      display: block;
+      position: sticky;
+      top: calc(var(--header-h, 64px) + 32px);
+    }
+    .chapters ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.8rem;
+    }
+  }
+</style>

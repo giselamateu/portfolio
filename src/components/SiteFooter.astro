@@ -1,0 +1,71 @@
+---
+import { site } from '../config';
+import { localePath, useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div class="foot-main">
+      <p class="display foot-name">{t('site.name')}</p>
+      <p class="mono foot-role">{t('site.role')} · {t('site.location')}</p>
+    </div>
+
+    <div class="foot-contact">
+      <span class="mono">{t('about.contact')}</span>
+      <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
+      <a class="link" href={site.instagram} rel="me noopener" target="_blank">@{site.instagramHandle}</a>
+    </div>
+
+    <div class="foot-meta">
+      <p class="mono">{t('footer.imageRights')}: Gisela Mateu</p>
+      <p class="mono">© {year} {t('site.name')} — {t('footer.rights')}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: clamp(3rem, 8vw, 8rem);
+    padding-block: clamp(2.5rem, 6vw, 5rem);
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .foot-name {
+    font-size: var(--step-2);
+  }
+  .foot-role {
+    margin-top: 0.5rem;
+  }
+  .foot-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+  .foot-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  @media (min-width: 860px) {
+    .foot-grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+      align-items: start;
+      gap: 2rem;
+    }
+    .foot-meta {
+      align-items: flex-end;
+      text-align: right;
+    }
+  }
+</style>

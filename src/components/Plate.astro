@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  aspect?: string;
+  contain?: boolean;
+  widths?: number[];
+}
+const {
+  src,
+  alt,
+  caption,
+  aspect,
+  contain = false,
+  widths = [1000, 1600, 2200, 2800],
+} = Astro.props;
+---
+
+<figure class="plate" data-reveal>
+  <div class="plate-media" class:list={[{ 'is-contain': contain }]} style={aspect ? `aspect-ratio:${aspect}` : undefined}>
+    <Image src={src} alt={alt} widths={widths} sizes="100vw" loading="lazy" decoding="async" />
+  </div>
+  {caption && <figcaption class="plate-cap mono wrap">{caption}</figcaption>}
+</figure>
+
+<style>
+  .plate {
+    margin: 0;
+  }
+  .plate-media {
+    position: relative;
+    overflow: hidden;
+    background: var(--carbon);
+  }
+  .plate-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .plate-media.is-contain img {
+    object-fit: contain;
+  }
+  .plate-cap {
+    margin-top: 1rem;
+    max-width: 60ch;
+    line-height: 1.6;
+  }
+</style>

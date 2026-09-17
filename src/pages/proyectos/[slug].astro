@@ -1,0 +1,28 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectView from '../../views/ProjectView.astro';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const copy = project.data.i18n.es;
+---
+
+<BaseLayout
+  lang="es"
+  title={project.data.title}
+  description={`${project.data.title} — ${copy.subtitle}. ${copy.tagline}.`}
+  projectSlug={project.id}
+>
+  <ProjectView project={project} lang="es" />
+</BaseLayout>

@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, type Lang } from '../i18n/utils';
+import ProjectCard from '../components/ProjectCard.astro';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+  lang: Lang;
+}
+const { projects, lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="wrap section">
+  <div class="section-head">
+    <h2>{t('home.projects')}</h2>
+  </div>
+  <div class="work-grid">
+    {projects.map((project) => <ProjectCard project={project} lang={lang} />)}
+  </div>
+  <p class="mono more-soon" data-reveal>{t('home.moreSoon')}</p>
+</section>
+
+<style>
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: clamp(4rem, 12vw, 8rem);
+    max-width: 1120px;
+    margin-inline: auto;
+  }
+  .more-soon {
+    margin-top: clamp(4rem, 10vw, 8rem);
+    text-align: center;
+  }
+  @media (min-width: 760px) {
+    .work-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+  @media (min-width: 1150px) {
+    .work-grid {
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: clamp(3rem, 7vw, 7rem);
+    }
+  }
+</style>
