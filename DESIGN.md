@@ -52,7 +52,10 @@ Selection, caret-free inputs, scrollbar, and focus ring are themed from this pal
 - **Proyectos:** even, hierarchy-free grid — all cards equal, small covers (≤ 260 px),
   wide gutters and outer margins, deliberately a touch empty. Three columns on desktop,
   one centred column on mobile. Each card uses `cardCover` (falling back to `cover`),
-  cropped 3:4. Template covers are palette-toned plates marked "plantilla — sustituir".
+  cropped 3:4.
+- **Materials:** fabric and trim swatches are small cards — image plus name, then
+  price · supplier in the mono metadata face. Three fabrics across on desktop, two
+  trims, deliberately not full width.
 - **Instagram:** own page reusing the feed section (build-time Behold fetch, follow-link
   fallback).
 - **Project:** hero as a full-bleed editorial band (3:2 on mobile, `clamp(400px,

@@ -6,6 +6,7 @@ const localized = z.object({
   subtitle: z.string(),
   tagline: z.string(),
   concept: z.array(z.string()),
+  lineupCaption: z.string().optional(),
   credits: z.array(z.object({ role: z.string(), value: z.string() })),
 });
 
@@ -25,15 +26,25 @@ const projects = defineCollection({
       cover: image(),
       cardCover: image().optional(),
       coverAlt: z.string(),
-      moodboard: image(),
-      paletteBoard: image(),
-      palette: z.array(z.object({ hex: z.string(), name: z.string() })),
-      lineup: z.array(image()),
+      // Optional per project: a project only declares the sections it has.
+      heroRatio: z.string().optional(),
+      moodboard: image().optional(),
+      paletteBoard: image().optional(),
+      palette: z.array(z.object({ hex: z.string(), name: z.string().optional() })),
+      lineup: z.array(image()).default([]),
       clo: z.array(image()).default([]),
-      processBoard: image(),
+      processBoard: image().optional(),
       processMoulage: image().optional(),
-      editorial: z.array(image()),
-      fichas: z.array(image()),
+      editorial: z.array(image()).default([]),
+      fichas: z.array(image()).default([]),
+      tejidos: z.array(image()).default([]),
+      tejidoInfo: z
+        .array(z.object({ name: z.string(), price: z.string(), supplier: z.string() }))
+        .default([]),
+      fornituras: z.array(image()).default([]),
+      fornituraInfo: z
+        .array(z.object({ name: z.string(), price: z.string(), supplier: z.string() }))
+        .default([]),
       i18n: z.object({ es: localized, en: localized }),
     }),
 });
