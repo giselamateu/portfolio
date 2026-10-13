@@ -47,12 +47,15 @@ export const ui = {
 
     'about.title': 'Perfil',
     'about.lead':
-      'Soy diseñadora de moda formada en ESDi, Universitat Ramon Llull. Mi trabajo parte de la investigación, la observación y la experimentación, transformando referencias, materiales y tendencias en propuestas contemporáneas.',
+      'Soy diseñadora de moda interesada en el diseño, el desarrollo de conceptos, la investigación de tendencias y la narrativa visual.',
     'about.body1':
-      'Me interesa especialmente explorar siluetas, volúmenes y detalles constructivos, combinando creatividad, funcionalidad y una mirada estética propia.',
+      'Paralelamente a mi trabajo como diseñadora, he desarrollado experiencia en el ámbito del modelaje, trabajando con diferentes marcas y publicaciones. Esta experiencia me ha permitido conocer desde dentro los procesos creativos y de producción de distintos proyectos, así como comprender cómo una prenda se adapta al cuerpo, se presenta y se comunica a través de una imagen.',
     'about.body2':
-      'Soy una persona curiosa, observadora y adaptable, con ganas de seguir creciendo dentro de la industria de la moda y aportar mi sensibilidad y visión al desarrollo de producto.',
+      'A lo largo de mi trayectoria como modelo he trabajado para marcas y publicaciones como Lonbali, American Vintage, Susmies, Óptica Universitaria y Revista Clara, participando en campañas comerciales, editoriales y proyectos de imagen. Entre ellos, destacan mi participación en dos campañas para Óptica Universitaria y en Revista Clara, tanto en su portada como en un editorial.',
+    'about.body3':
+      'Trabajar desde ambas perspectivas de la industria de la moda ha enriquecido mi manera de entender el diseño: no solo como la creación de una prenda, sino como algo que existe sobre el cuerpo, se mueve, comunica y forma parte de una imagen.',
     'about.contact': 'Contacto',
+    'about.modeling': 'Modelaje',
     'about.emailLabel': 'Correo',
     'about.instagramLabel': 'Instagram',
     'about.linkedinLabel': 'LinkedIn',
@@ -125,12 +128,15 @@ export const ui = {
 
     'about.title': 'About',
     'about.lead':
-      'I am a fashion designer trained at ESDi, Universitat Ramon Llull. My work starts from research, observation and experimentation, transforming references, materials and trends into contemporary proposals.',
+      'I am a fashion designer interested in design, concept development, trend research and visual storytelling.',
     'about.body1':
-      'I am especially interested in exploring silhouettes, volumes and constructive details, combining creativity, functionality and my own aesthetic eye.',
+      'Alongside my work as a designer, I have built experience in modelling, working with different brands and publications. This experience has given me an inside view of the creative and production processes behind a range of projects, and helped me understand how a garment adapts to the body, is presented and communicates through an image.',
     'about.body2':
-      'I am curious, observant and adaptable, eager to keep growing within the fashion industry and to bring my sensitivity and vision to product development.',
+      'Throughout my modelling career, I have worked with brands and publications including Lonbali, American Vintage, Susmies, Óptica Universitaria and Revista Clara, taking part in commercial campaigns, editorials and image projects. Highlights include two campaigns for Óptica Universitaria and appearing in Revista Clara, both on its cover and in an editorial.',
+    'about.body3':
+      'Working from both perspectives of the fashion industry has enriched the way I understand design: not only as the creation of a garment, but as something that exists on the body, moves, communicates and becomes part of an image.',
     'about.contact': 'Contact',
+    'about.modeling': 'Modelling',
     'about.emailLabel': 'Email',
     'about.instagramLabel': 'Instagram',
     'about.linkedinLabel': 'LinkedIn',

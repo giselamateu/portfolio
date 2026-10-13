@@ -2,6 +2,9 @@
 import { Image } from 'astro:assets';
 import { site } from '../config';
 import { useTranslations, localePath, type Lang } from '../i18n/utils';
+import lonbali from '../assets/modeling/lonbali.jpg';
+import susmies from '../assets/modeling/susmies.jpg';
+import clara from '../assets/modeling/clara.jpg';
 
 interface Props {
   lang: Lang;
@@ -11,6 +14,23 @@ interface Props {
 const { lang, image, imageAlt } = Astro.props;
 const t = useTranslations(lang);
 const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
+const modelingPhotos = [
+  {
+    src: lonbali,
+    brand: 'Lonbali',
+    alt: lang === 'es' ? 'Campaña de modelaje para Lonbali' : 'Modelling campaign for Lonbali',
+  },
+  {
+    src: susmies,
+    brand: 'Susmies',
+    alt: lang === 'es' ? 'Trabajo de modelaje para Susmies' : 'Modelling work for Susmies',
+  },
+  {
+    src: clara,
+    brand: 'Revista Clara',
+    alt: lang === 'es' ? 'Portada de Revista Clara con Gisela Mateu' : 'Revista Clara cover featuring Gisela Mateu',
+  },
+];
 ---
 
 <section class="wrap section about">
@@ -23,6 +43,7 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
       <div class="prose" data-reveal style="--reveal-delay:100ms">
         <p>{t('about.body1')}</p>
         <p>{t('about.body2')}</p>
+        <p>{t('about.body3')}</p>
       </div>
     </div>
     {
@@ -32,6 +53,28 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
         </div>
       )
     }
+  </div>
+</section>
+
+<section class="wrap section--tight modeling-work">
+  <div class="section-head">
+    <h2>{t('about.modeling')}</h2>
+    <span class="mono">{String(modelingPhotos.length).padStart(2, '0')}</span>
+  </div>
+  <div class="modeling-grid">
+    {modelingPhotos.map((photo, i) => (
+      <figure class="modeling-card" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          widths={[500, 800, 1200]}
+          sizes="(min-width: 1000px) 28vw, (min-width: 640px) 44vw, 92vw"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="mono">{photo.brand}</figcaption>
+      </figure>
+    ))}
   </div>
 </section>
 
@@ -90,6 +133,26 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
     gap: 0.4rem;
     max-width: 40rem;
   }
+  .modeling-work {
+    padding-top: clamp(1rem, 3vw, 2.5rem);
+  }
+  .modeling-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.2rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+  .modeling-card {
+    min-width: 0;
+  }
+  .modeling-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .modeling-card figcaption {
+    margin-top: 0.7rem;
+  }
   .contact-row {
     display: grid;
     gap: 0.2rem;
@@ -114,6 +177,16 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
     .about-media {
       max-width: 280px;
       justify-self: end;
+    }
+  }
+  @media (min-width: 640px) {
+    .modeling-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .modeling-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>
