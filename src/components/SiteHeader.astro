@@ -12,6 +12,7 @@ const other = otherLang(lang);
 const path = base && Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) : Astro.url.pathname;
 const onAbout = /(^|\/)(sobre|about)\/?$/.test(path);
 const onContact = /(^|\/)(contacto|contact)\/?$/.test(path);
+const onCurriculum = /(^|\/)curriculum\/?$/.test(path);
 
 const onInstagram = /(^|\/)instagram\/?$/.test(path);
 const projectsPath = lang === 'es' ? 'proyectos' : 'projects';
@@ -24,6 +25,8 @@ if (projectSlug) {
   langTarget = localePath(other, other === 'es' ? 'sobre' : 'about');
 } else if (onContact) {
   langTarget = localePath(other, other === 'es' ? 'contacto' : 'contact');
+} else if (onCurriculum) {
+  langTarget = localePath(other, 'curriculum');
 } else if (onInstagram) {
   langTarget = localePath(other, 'instagram');
 } else {
@@ -33,6 +36,7 @@ if (projectSlug) {
 const workHref = localePath(lang, projectsPath);
 const instagramHref = localePath(lang, instagramPath);
 const aboutHref = localePath(lang, lang === 'es' ? 'sobre' : 'about');
+const curriculumHref = localePath(lang, 'curriculum');
 const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
 ---
 
@@ -47,6 +51,10 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
       <a class="nav-link nav-work" href={workHref}>{t('nav.work')}</a>
       <a class="nav-link nav-instagram" href={instagramHref}>{t('nav.instagram')}</a>
       <a class="nav-link" href={aboutHref}>{t('nav.about')}</a>
+      <a class="nav-link nav-cv" href={curriculumHref}>
+        <span class="nav-cv-full">{t('nav.cv')}</span>
+        <span class="nav-cv-short">{t('nav.cvShort')}</span>
+      </a>
       <a class="nav-link" href={contactHref}>{t('nav.contact')}</a>
       <a class="lang" href={langTarget} aria-label={t('lang.switch')} hreflang={other}>
         <span class:list={[{ on: lang === 'es' }]}>ES</span>
@@ -104,6 +112,9 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
     color: var(--bone-dim);
     transition: color 0.35s var(--ease);
   }
+  .nav-cv-short {
+    display: none;
+  }
   .nav-link:hover,
   .nav-link:focus-visible,
   .lang:hover,
@@ -130,13 +141,27 @@ const contactHref = localePath(lang, lang === 'es' ? 'contacto' : 'contact');
     }
     .nav {
       width: 100%;
-      justify-content: space-between;
+      min-width: 0;
+      justify-content: flex-start;
       gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .nav::-webkit-scrollbar {
+      display: none;
     }
     .nav-link,
     .lang {
       font-size: 0.66rem;
       letter-spacing: 0.03em;
+      flex: none;
+    }
+    .nav-cv-full {
+      display: none;
+    }
+    .nav-cv-short {
+      display: inline;
     }
     .lang {
       padding-left: 0.7rem;
