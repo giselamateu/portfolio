@@ -1,0 +1,297 @@
+---
+import { Image } from 'astro:assets';
+import { useTranslations, withBase, type Lang } from '../i18n/utils';
+import lonbali from '../assets/modeling/lonbali.jpg';
+import susmies from '../assets/modeling/susmies.jpg';
+import clara from '../assets/modeling/clara.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const modelingPhotos = [
+  {
+    src: lonbali,
+    brand: 'Lonbali',
+    alt: lang === 'es' ? 'Campaña de modelaje para Lonbali' : 'Modelling campaign for Lonbali',
+  },
+  {
+    src: susmies,
+    brand: 'Susmies',
+    alt: lang === 'es' ? 'Trabajo de modelaje para Susmies' : 'Modelling work for Susmies',
+  },
+  {
+    src: clara,
+    brand: 'Revista Clara',
+    alt: lang === 'es' ? 'Portada de Revista Clara con Gisela Mateu' : 'Revista Clara cover featuring Gisela Mateu',
+  },
+];
+const cvExperience = [
+  {
+    title: t('about.cvModelTitle'),
+    dates: t('about.cvModelDates'),
+    description: t('about.cvModelDescription'),
+  },
+  {
+    title: t('about.cvDesignTitle'),
+    dates: t('about.cvDesignDates'),
+    description: t('about.cvDesignDescription'),
+  },
+];
+const cvEducation = [
+  {
+    title: t('about.cvFashionDegree'),
+    school: t('about.cvFashionSchool'),
+    dates: t('about.cvFashionDates'),
+  },
+  {
+    title: t('about.cvFashionMaster'),
+    school: t('about.cvFashionMasterSchool'),
+    dates: t('about.cvFashionMasterDates'),
+  },
+  {
+    title: t('about.cvCommunicationDegree'),
+    school: t('about.cvCommunicationSchool'),
+    dates: t('about.cvCommunicationDates'),
+  },
+];
+const cvSkills = [t('about.cvPatternmaking'), t('about.cvGraphicDesign')];
+const cvLanguages = [
+  t('about.cvSpanish'),
+  t('about.cvCatalan'),
+  t('about.cvItalian'),
+  t('about.cvEnglish'),
+];
+---
+
+<section class="wrap section curriculum">
+  <header class="curriculum-head">
+    <h1 class="display curriculum-title">{t('about.cvTitle')}</h1>
+    <a class="cv-download" href={withBase('/cv/Curriculum_Gisela_Mateu.pdf')} download="Gisela_Mateu_CV.pdf">
+      <span>{t('about.cvDownload')}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" />
+      </svg>
+    </a>
+  </header>
+
+  <div class="cv-sheet">
+    <div class="cv-grid">
+      <section class="cv-block">
+        <h2 class="display cv-block-title">{t('about.cvExperience')}</h2>
+        {cvExperience.map((item) => (
+          <article class="cv-item">
+            <div class="cv-item-heading">
+              <h3>{item.title}</h3>
+              <span class="mono cv-dates">{item.dates}</span>
+            </div>
+            <p>{item.description}</p>
+          </article>
+        ))}
+
+        <h2 class="display cv-block-title cv-subheading">{t('about.cvEducation')}</h2>
+        {cvEducation.map((item) => (
+          <article class="cv-item">
+            <div class="cv-item-heading">
+              <h3>{item.title}</h3>
+              <span class="mono cv-dates">{item.dates}</span>
+            </div>
+            <p>{item.school}</p>
+          </article>
+        ))}
+      </section>
+
+      <aside class="cv-aside">
+        <section class="cv-block">
+          <h2 class="display cv-block-title">{t('about.cvSkills')}</h2>
+          <ul class="cv-list">
+            {cvSkills.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+        <section class="cv-block cv-languages">
+          <h2 class="display cv-block-title">{t('about.cvLanguages')}</h2>
+          <ul class="cv-list">
+            {cvLanguages.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section--tight modeling-work">
+  <div class="section-head">
+    <h2>{t('about.modeling')}</h2>
+    <span class="mono">{String(modelingPhotos.length).padStart(2, '0')}</span>
+  </div>
+  <div class="modeling-grid">
+    {modelingPhotos.map((photo, i) => (
+      <figure class="modeling-card" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          widths={[500, 800, 1200]}
+          sizes="(min-width: 1000px) 28vw, (min-width: 640px) 44vw, 92vw"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="mono">{photo.brand}</figcaption>
+      </figure>
+    ))}
+  </div>
+</section>
+
+<style>
+  .curriculum-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: clamp(1.2rem, 3vw, 2rem);
+  }
+  .curriculum-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+  }
+  .cv-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    min-height: 2.9rem;
+    padding: 0.7rem 1rem;
+    background: var(--bone);
+    color: var(--negro);
+    font-size: var(--step--1);
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    transition: background-color 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .cv-download:hover,
+  .cv-download:focus-visible {
+    background: var(--accent);
+    color: var(--bone);
+  }
+  .cv-download svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex: none;
+  }
+  .cv-sheet {
+    padding: clamp(1.2rem, 4vw, 3.4rem);
+    background: #f3efe7;
+    color: #21180f;
+    box-shadow: 0 30px 60px -48px rgba(0, 0, 0, 0.72);
+  }
+  .cv-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 4rem);
+  }
+  .cv-block-title {
+    margin-bottom: 1.35rem;
+    color: #21180f;
+    font-size: clamp(1.15rem, 1rem + 0.7vw, 1.55rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+  .cv-subheading {
+    margin-top: clamp(2.2rem, 5vw, 3.4rem);
+  }
+  .cv-item + .cv-item {
+    margin-top: clamp(1.3rem, 2.5vw, 1.9rem);
+  }
+  .cv-item-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.3rem 1rem;
+  }
+  .cv-item h3 {
+    font-size: var(--step-0);
+    font-weight: 560;
+    line-height: 1.4;
+    color: #21180f;
+  }
+  .cv-item p {
+    margin-top: 0.35rem;
+    max-width: 70ch;
+    color: #5b4e3d;
+    line-height: 1.6;
+  }
+  .cv-dates {
+    white-space: nowrap;
+    color: #66543d;
+    text-align: right;
+  }
+  .cv-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cv-list li {
+    display: grid;
+    grid-template-columns: 0.45rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.7rem;
+    color: #3f3327;
+  }
+  .cv-list li::before {
+    content: '';
+    width: 0.38rem;
+    height: 0.38rem;
+    background: #997142;
+    transform: rotate(45deg);
+  }
+  .cv-languages {
+    margin-top: 2.5rem;
+  }
+  .modeling-work {
+    padding-top: clamp(1rem, 3vw, 2.5rem);
+  }
+  .modeling-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.2rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+  .modeling-card {
+    min-width: 0;
+  }
+  .modeling-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .modeling-card figcaption {
+    margin-top: 0.7rem;
+  }
+  @media (min-width: 900px) {
+    .cv-grid {
+      grid-template-columns: minmax(0, 1.6fr) minmax(15rem, 0.8fr);
+      align-items: start;
+    }
+  }
+  @media (max-width: 600px) {
+    .cv-item-heading {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.3rem;
+    }
+    .cv-dates {
+      text-align: left;
+    }
+  }
+  @media (min-width: 640px) {
+    .modeling-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .modeling-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>
